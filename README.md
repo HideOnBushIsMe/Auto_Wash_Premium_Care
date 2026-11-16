@@ -174,7 +174,7 @@
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/Auto_Wash_Premium_Care.git
+git clone https://github.com/HideOnBushIsMe/Auto_Wash_Premium_Care.git
 cd Auto_Wash_Premium_Care
 ```
 
