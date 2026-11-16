@@ -1,0 +1,146 @@
+  AddOn
+  •  GET  /api/add-ons
+  AdminAddOn
+  •  GET  /api/admin/add-ons
+  •  POST  /api/admin/add-ons
+  •  GET  /api/admin/add-ons/{id}
+  •  PUT  /api/admin/add-ons/{id}
+  •  DELETE  /api/admin/add-ons/{id}
+  AdminBooking
+  •  PUT  /api/admin/bookings/{id}/complete
+
+  AdminBranch
+
+  •  GET  /api/admin/branches
+  •  POST  /api/admin/branches
+  •  GET  /api/admin/branches/{id}
+  •  PUT  /api/admin/branches/{id}
+  •  DELETE  /api/admin/branches/{id}
+
+  AdminPromotion
+
+  •  GET  /api/admin/promotions
+  •  POST  /api/admin/promotions
+  •  GET  /api/admin/promotions/{id}
+  •  PUT  /api/admin/promotions/{id}
+  •  DELETE  /api/admin/promotions/{id}
+
+  AdminReward
+  •  GET  /api/admin/rewards
+  •  POST  /api/admin/rewards
+  •  GET  /api/admin/rewards/{id}
+  •  PUT  /api/admin/rewards/{id}
+  •  DELETE  /api/admin/rewards/{id}
+  •  POST  /api/admin/rewards/redemptions/{id}/fulfill
+  AdminTier
+  •  GET  /api/admin/tiers
+  •  POST  /api/admin/tiers
+  •  GET  /api/admin/tiers/{id}
+  •  PUT  /api/admin/tiers/{id}
+  •  DELETE  /api/admin/tiers/{id}
+
+  AdminUser
+  •  GET  /api/admin/users
+  •  PUT  /api/admin/users/{id}/status
+  •  PUT  /api/admin/users/{id}/role
+  AdminWashBay
+  •  GET  /api/admin/wash-bays
+  •  POST  /api/admin/wash-bays
+  •  GET  /api/admin/wash-bays/by-branch/{branchId}
+  •  GET  /api/admin/wash-bays/{id}
+  •  PUT  /api/admin/wash-bays/{id}
+  •  DELETE  /api/admin/wash-bays/{id}
+  AdminWashPackage
+  •  GET  /api/admin/wash-packages/{id}
+  •  PUT  /api/admin/wash-packages/{id}
+  •  GET  /api/admin/wash-packages
+  •  POST  /api/admin/wash-packages
+  •  DELETE  /api/admin/wash-packages/{id}
+
+  Auth
+
+  •  POST  /api/auth/register
+  •  POST  /api/auth/login
+  •  POST  /api/auth/refresh-token
+  •  PUT  /api/auth/change-password
+  •  POST  /api/auth/logout
+  •  GET  /api/auth/me
+  •  POST  /api/auth/google-login
+  •  POST  /api/auth/send-otp
+  •  POST  /api/auth/verify-otp
+  Booking
+
+  •  POST  /api/bookings
+  •  GET  /api/bookings/{id}
+  •  PUT  /api/bookings/{id}
+  •  GET  /api/bookings/my-bookings
+  •  PUT  /api/bookings/{id}/cancel
+
+  Customer
+
+  •  GET  /api/customers/me
+  •  PUT  /api/customers/me
+
+  Loyalty
+
+  •  GET  /api/loyalty/balance
+  •  GET  /api/loyalty/history
+  •  GET  /api/loyalty/my-vouchers
+  •  POST  /api/loyalty/redeem
+  •  POST  /api/loyalty/vouchers/{id}/use
+
+  Notification
+  •  GET  /api/notification
+  •  GET  /api/notification/unread-count
+  •  PATCH  /api/notification/{id}/read
+  Payment
+  •  POST  /api/payments/bookings/{bookingId}/checkout
+  •  GET  /api/payments/vnpay/ipn
+  •  GET  /api/payments/vnpay/return
+  Promotion
+  •  GET  /api/promotions/{code}/preview
+
+  Reward
+  •  GET  /api/rewards
+  •  POST  /api/rewards/{id}/redeem
+  •  GET  /api/rewards/me/redemptions
+  Staff
+
+  •  GET  /api/staff/profile
+  •  GET  /api/staff/{id}
+  •  POST  /api/staff
+
+  StaffBooking
+  •  GET  /api/staff/bookings/scan-qr
+  •  GET  /api/staff/bookings
+  •  PATCH  /api/staff/bookings/{id}/confirm
+  •  PATCH  /api/staff/bookings/{id}/check-in
+  •  PATCH  /api/staff/bookings/{id}/queue
+  •  PATCH  /api/staff/bookings/{id}/start
+  •  PATCH  /api/staff/bookings/{id}/checkout
+  •  PATCH  /api/staff/bookings/{id}/cancel
+  •  PATCH  /api/staff/bookings/{id}/no-show
+  •  PATCH  /api/staff/bookings/{id}/completed
+
+  Tier
+
+  •  GET  /api/tiers
+  •  POST  /api/tiers
+  •  GET  /api/tiers/{id}
+  •  PUT  /api/tiers/{id}
+  •  DELETE  /api/tiers/{id}
+
+  TimeSlot
+
+  •  GET  /api/time-slots/weekly-summary
+
+  Vehicle
+
+  •  POST  /api/vehicles
+  •  GET  /api/vehicles
+  •  DELETE  /api/vehicles/{id}
+
+  WashPackage
+
+  •  GET  /api/wash-packages
+  •  GET  /api/wash-packages/{id}

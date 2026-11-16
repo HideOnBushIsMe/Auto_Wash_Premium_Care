@@ -1,0 +1,126 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo } from 'react';
+import { RewardRepositoryImplement } from '../infrastructure/repositories/reward/reward.repository.implement.ts';
+import type { RewardDto, RedemptionDto, MappedVoucher, Voucher } from '../domain/models/voucher/voucher.model.ts';
+import { useTranslation } from 'react-i18next';
+import { translateDynamic } from '@/shared/utils/translateDynamic.ts';
+
+const rewardRepository = new RewardRepositoryImplement();
+
+export const useReward = () => {
+    const queryClient = useQueryClient();
+    const { i18n } = useTranslation();
+
+    // Query danh sách phần thưởng có thể đổi (tại quầy / bằng điểm)
+    const availableRewardsQuery = useQuery<RewardDto[]>({
+        queryKey: ['available_rewards'],
+        queryFn: async () => {
+            const data = await rewardRepository.getAvailableRewards();
+            console.log("data trong useReward", data.filter(reward => reward.isFreeWash === false));
+            if (Array.isArray(data)) {
+                return data.filter(reward => reward.isFreeWash === false);
+            }
+            return [];
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // Query lịch sử đổi thưởng - Đã cập nhật Type khớp 100% với JSON mẫu
+    const myRedemptionsQuery = useQuery<RedemptionDto[]>({
+        queryKey: ['my_redemptions'],
+        queryFn: async () => {
+            const data = await rewardRepository.getMyRedemptions();
+            return Array.isArray(data) ? data : [];
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // Query danh sách voucher khả dụng (chủ động gọi endpoint /loyalty/my-vouchers?activeOnly=true)
+    const myVouchersQuery = useQuery<Voucher[]>({
+        queryKey: ['my_vouchers', true],
+        queryFn: async () => {
+            const data = await rewardRepository.getMyVouchers(true);
+            return Array.isArray(data) ? data : [];
+        },
+        staleTime: 1000 * 60 * 5,
+    });
+
+    // Mutation đổi reward lấy voucher
+    const redeemRewardMutation = useMutation({
+        mutationFn: (rewardId: string) => rewardRepository.redeemReward(rewardId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
+            queryClient.invalidateQueries({ queryKey: ['my_vouchers'] });
+            queryClient.invalidateQueries({ queryKey: ['customer_me'] });
+            queryClient.invalidateQueries({ queryKey: ['available_rewards'] });
+        }
+    });
+
+    const giftRewardMutation = useMutation({
+        mutationFn: ({ customerId, rewardId, bookingId }: { customerId: string; rewardId: string; bookingId?: string }) =>
+            rewardRepository.giftReward(customerId, rewardId, bookingId),
+        onSuccess: () => {
+            // Làm tươi lại lịch sử/danh sách voucher nếu cần
+            queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
+        }
+    });
+
+    // Lắng nghe sự kiện cập nhật điểm từ hệ thống
+    useEffect(() => {
+        const handlePointsChanged = () => {
+            queryClient.invalidateQueries({ queryKey: ['customer_me'] });
+            queryClient.invalidateQueries({ queryKey: ['my_redemptions'] });
+            queryClient.invalidateQueries({ queryKey: ['my_vouchers'] });
+            queryClient.invalidateQueries({ queryKey: ['available_rewards'] });
+        };
+        window.addEventListener('customer_points_changed', handlePointsChanged);
+        return () => window.removeEventListener('customer_points_changed', handlePointsChanged);
+    }, [queryClient]);
+
+    const availableRewards = availableRewardsQuery.data ?? [];
+    const redemptions = myRedemptionsQuery.data ?? [];
+
+    // 🌟 MAPPING DATA SANG FORMAT VOUCHER DÀNH RIÊNG CHO ĐẶT LỊCH
+    // Dựa vào JSON bạn cung cấp, trạng thái khả dụng để dùng là 'Pending' hoặc 'Active'
+    const redeemedVouchersOnly = useMemo<MappedVoucher[]>(() => {
+        return redemptions
+            .filter(item => item && (item.status === 'Pending' || item.status === 'Active'))
+            .map(item => {
+                // Tự động bóc tách số tiền từ text (Ví dụ: "Voucher 50k" -> 50000) để tính toán hóa đơn
+                const digitMatch = item.rewardName.match(/\d+/);
+                const discountAmount = digitMatch
+                    ? parseInt(digitMatch[0], 10) * (item.rewardName.toLowerCase().includes('k') ? 1000 : 1)
+                    : 0;
+
+                return {
+                    id: item.id, // ID của bản ghi giao dịch đổi thưởng dùng để truyền lên API đặt lịch
+                    code: `REDEEM-${item.pointsSpent}PTS`,
+                    title: translateDynamic(item.rewardName, i18n.language),
+                    description: i18n.language === 'en' ? `Successfully redeemed with ${item.pointsSpent} points` : `Đã đổi thành công bằng ${item.pointsSpent} điểm`,
+                    status: item.status,
+                    discountValue: discountAmount,
+                    expiryDate: 'Khả dụng',
+                    isRewardItem: true,
+                    isFreeWash: item.rewardName === "Phần thưởng Rửa Xe Miễn Phí" || item.rewardName === "Free Car Wash Reward" || item.rewardName.includes("Miễn Phí") || item.rewardName.includes("Free Wash")
+                };
+            });
+    }, [redemptions, i18n.language]);
+
+    return {
+        availableRewards,
+        isLoadingRewards: availableRewardsQuery.isLoading || availableRewardsQuery.isFetching,
+
+        redemptions, // Dữ liệu thô từ API (tiện dùng cho trang Lịch Sử Đổi Thưởng nếu cần)
+        redeemedVouchersOnly, // 🌟 Danh sách đã convert chuẩn chỉnh, ném thẳng vào <VoucherSelection /> ở BookWash
+        isLoadingRedemptions: myRedemptionsQuery.isLoading,
+
+        myVouchers: myVouchersQuery.data ?? [],
+        isLoadingVouchers: myVouchersQuery.isLoading,
+
+        redeemReward: redeemRewardMutation.mutateAsync,
+        isRedeeming: redeemRewardMutation.isPending,
+
+        giftReward: giftRewardMutation.mutateAsync,
+        isGifting: giftRewardMutation.isPending
+    };
+};

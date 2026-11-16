@@ -1,0 +1,168 @@
+import React from "react";
+import { StaffChatPanel } from "../components/staff/StaffChatPanel";
+import { NavLink, useNavigate, Outlet } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Droplets,
+  LogOut,
+  Bell,
+  UserRound,
+  LayoutGrid,
+  MonitorPlay,
+} from "lucide-react";
+import { useAuth } from "../../application/useAuth";
+import { useNotification } from "@/features/products/application/useNotification.ts";
+import { useLanguage } from "@/core/context/LanguageContext.tsx";
+import { useTranslation } from "react-i18next";
+
+export const StaffLayout: React.FC = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const { unreadCount } = useNotification();
+  const { t } = useTranslation("customer");
+  const { language, toggleLanguage } = useLanguage();
+
+  const staffLinks = [
+    { to: "/staff/dashboard", icon: LayoutDashboard, label: t('staffSidebar.overview') },
+    { to: "/staff/monitor", icon: LayoutGrid, label: t('staffSidebar.queueMonitor') },
+    { to: "/staff/live-tracking", icon: MonitorPlay, label: "Live Tracking" },
+  ];
+
+  const systemLinks = [
+    { to: "/staff/notifications", icon: Bell, label: t('staffSidebar.notifications') },
+    { to: "/staff/profile", icon: UserRound, label: t('staffSidebar.profile') },
+  ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  return (
+    <div className="h-screen w-screen bg-[#fafafa] dark:bg-[#050505] flex overflow-hidden antialiased font-sans">
+      {/* Background Glow */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-multiply dark:mix-blend-lighten z-0"></div>
+
+      {/* Sidebar - Premium Glassmorphic */}
+      <aside className="w-72 bg-white/80 dark:bg-[#0a0a0a]/80 backdrop-blur-2xl border-r border-slate-200/60 dark:border-white/5 flex flex-col justify-between shadow-[4px_0_24px_rgba(0,0,0,0.02)] dark:shadow-[4px_0_24px_rgba(0,0,0,0.2)] h-full relative z-20 transition-all duration-300">
+        {/* Logo Section */}
+        <div className="p-6 pb-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-[1.25rem] flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Droplets className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 tracking-tight leading-none">
+                AutoWash
+              </h1>
+              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest mt-1">{t('staffSidebar.staffPortal')}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="flex-1 px-4 space-y-6 overflow-y-auto custom-scrollbar">
+          {/* Operations Group */}
+          <div>
+            <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">{t('staffSidebar.operations')}</p>
+            <div className="space-y-1.5">
+              {staffLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all font-bold text-sm group ${
+                      isActive
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-blue-950 dark:hover:text-white"
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div
+                        className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
+                      >
+                        <link.icon className="w-4 h-4" />
+                      </div>
+                      {link.label}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+
+          {/* System Group */}
+          <div>
+            <p className="px-4 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">{t('staffSidebar.system')}</p>
+            <div className="space-y-1.5">
+              {systemLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3.5 px-4 py-3 rounded-2xl transition-all font-bold text-sm group ${
+                      isActive
+                        ? "bg-gradient-to-r from-slate-700 to-slate-900 dark:from-slate-600 dark:to-slate-800 text-white shadow-lg shadow-slate-900/20"
+                        : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-blue-950 dark:hover:text-white"
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div
+                        className={`p-2 rounded-xl transition-colors ${isActive ? "bg-white/20" : "bg-slate-100 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10"}`}
+                      >
+                        <link.icon className="w-4 h-4" />
+                      </div>
+                      <span className="flex-1">{link.label}</span>
+
+                      {link.label === "Notifications" && unreadCount > 0 && (
+                        <span className="bg-rose-500 text-white text-[10px] py-1 px-2.5 rounded-full font-black shadow-sm animate-pulse">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        </nav>
+
+        {/* Bottom: Language toggle + Logout */}
+        <div className="pt-4 mt-auto border-t border-slate-100 dark:border-white/5 shrink-0 px-4 pb-4 space-y-2">
+          <button
+            onClick={toggleLanguage}
+            className="flex w-full items-center justify-center gap-3 px-4 py-3 text-slate-600 hover:text-blue-600 bg-slate-100 hover:bg-blue-50 dark:bg-white/5 dark:hover:bg-blue-500/10 rounded-2xl transition-all font-bold text-sm"
+          >
+            <span className="text-lg">{language === 'en' ? '🇺🇸' : '🇻🇳'}</span>
+            <span>{language === 'en' ? 'English' : 'Tiếng Việt'}</span>
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center justify-center gap-3 px-4 py-3.5 text-rose-500 hover:text-rose-600 bg-rose-50 hover:bg-rose-100 dark:bg-rose-500/10 dark:hover:bg-rose-500/20 rounded-2xl transition-all font-bold text-sm group"
+          >
+            <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />{t('staffSidebar.logout')}
+          </button>
+
+          <div className="text-center text-[10px] text-slate-400 font-black tracking-widest uppercase mt-2">
+            © 2026 AUTOWASH HQ
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content View */}
+      <main className="flex-1 p-6 md:p-8 lg:p-10 h-screen overflow-y-auto relative z-10 custom-scrollbar">
+        <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-500">
+          <Outlet />
+        </div>
+      </main>
+
+      <StaffChatPanel />
+    </div>
+  );
+};

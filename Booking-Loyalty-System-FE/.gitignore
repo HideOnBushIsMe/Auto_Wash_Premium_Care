@@ -1,0 +1,73 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+.next/
+.nuxt/
+out/
+
+# Environment variables & Secrets (BẢO MẬT)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.pem
+*.key
+
+# TypeScript / Build cache
+.tsconfig.tsbuildinfo
+.eslintcache
+.stylelintcache
+
+# Local files
+*.local
+
+# OS files (File rác hệ điều hành)
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.patch
+
+# Testing
+coverage/
+.nyc_output/
+
+# Local dev notes & AI agent memory (không liên quan đến vận hành dự án)
+GEMINI.md
+Note.txt
+*.diff
+*.patch
+AGENTS.mdBackend_i18n_Report.md
+AI_CHAT_HISTORY.md
+fill_excel.py
+inspect_excel.py
